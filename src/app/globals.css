@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/* Tokens sacados del prototipo de Claude Design (design/). Contraste AA revisado. */
+@theme {
+  --color-fondo: #f5f6fa;
+  --color-superficie: #ffffff;
+  --color-borde: #e6e8ef;
+  --color-gris: #eceef3;
+  --color-texto: #0f1523;
+  --color-texto-suave: #5a6275;
+  --color-acento: #5b3df5;
+  --color-acento-fuerte: #4b2fe0;
+  --color-acento-suave: #eeebfe;
+  --color-secundario: #047857;
+  --color-secundario-suave: #e7f5ef;
+  --color-aviso: #b54708;
+  --color-aviso-suave: #fff6e8;
+  --color-peligro: #b42318;
+  --color-peligro-suave: #fef3f2;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-control: 14px;
+  --radius-tarjeta: 16px;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+/* Carruseles sin barra de scroll visible */
+.sin-scrollbar {
+  scrollbar-width: none;
+}
+.sin-scrollbar::-webkit-scrollbar {
+  display: none;
+}
