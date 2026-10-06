@@ -17,7 +17,13 @@ export default defineConfig({
   webServer: {
     // Contenido local del seed y fecha fija (6 oct 2026, Lima) para que los tests no dependan del día.
     command: "npm run build && npx next start -p 3100",
-    env: { RUTAZ_CONTENIDO_LOCAL: "1", RUTAZ_AHORA: "2026-10-06T15:00:00Z" },
+    // Sin Supabase en el navegador: los tests no ensucian la medición real.
+    env: {
+      RUTAZ_CONTENIDO_LOCAL: "1",
+      RUTAZ_AHORA: "2026-10-06T15:00:00Z",
+      NEXT_PUBLIC_SUPABASE_URL: "",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "",
+    },
     url: "http://localhost:3100",
     timeout: 240_000,
     reuseExistingServer: !process.env.CI,
