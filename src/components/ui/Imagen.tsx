@@ -27,8 +27,9 @@ export function Imagen({ src, alt, sizes, priority, className = "" }: Props) {
         alt={alt}
         fill
         sizes={sizes}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
+        quality={60}
+        preload={priority}
+        loading={priority ? undefined : "lazy"}
         className="object-cover"
         onError={() => setRota(true)}
       />
