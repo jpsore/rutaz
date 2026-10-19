@@ -67,6 +67,6 @@ En el MVP las rutas viven **solo en el celular** (`localStorage`) con la forma `
 4. Agrega las tarjetas del mes en `month_picks`.
 5. En el SQL Editor corre `select * from chequeo_contenido;`. Debe salir vacío. Si no, te dice qué falta: tarjetas sin plantilla, días vacíos, avisos con destinos mal escritos, transporte verificado hace más de 60 días, fiestas con fecha por confirmar y destinos de altura marcados como dificultad baja.
 
-Los cambios se ven en la app en máximo una hora (ISR). Si quieres verlos al toque, redeploy en Vercel.
+Los cambios se ven en la app en máximo una hora (cada tabla se cachea por separado, así que durante esa hora puede verse a medias: por ejemplo una tarjeta sin su botón). Para verlos al toque y completos, borra el caché con `npx vercel cache purge --yes` desde la carpeta del proyecto. Un redeploy **no** basta: el caché de datos de Vercel sobrevive a los deploys.
 
 Consejo: para cargar mucho de una vez, pídele a Claude Code "genera el SQL de inserts para noviembre con estos datos" y pégalo en el SQL Editor.
