@@ -50,4 +50,4 @@ El login real (código por correo, Google, rutas en la nube, migración) cuesta 
 
 - Cerrar el sheet con la X, el fondo o Esc cuenta igual que "Ahora no" (7 días sin mostrarse).
 - Sin Supabase configurado, en desarrollo el envío se simula; en producción muestra el error y deja reintentar.
-- `/privacidad` tiene un correo de contacto de ejemplo (`hola@rutaz.pe`): hay que cambiarlo antes de lanzar.
+- Correo de contacto en `/privacidad`: app.rutaz@gmail.com.

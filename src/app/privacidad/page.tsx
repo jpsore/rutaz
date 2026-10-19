@@ -3,8 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = { title: "Cómo usamos tu correo" };
 
-// TODO antes de lanzar: poner el correo de contacto real (ver PLAN.md, "Antes de lanzar").
-const CORREO_CONTACTO = "hola@rutaz.pe";
+const CORREO_CONTACTO = "app.rutaz@gmail.com";
 
 export default function Privacidad() {
   return (
