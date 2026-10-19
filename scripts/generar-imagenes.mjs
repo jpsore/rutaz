@@ -10,6 +10,12 @@ const paisajes = {
   barranco: { cielo: ["#ff9a76", "#ffe0c2"], capas: ["#3d6e8f", "#e07a5f", "#7a3b2e"], sol: "#fff0b3", forma: "ciudad" },
   criolla: { cielo: ["#1d2b53", "#7e2553"], capas: ["#ff77a8", "#c23b6b", "#5a1d3a"], sol: "#ffec99", forma: "ciudad" },
   lachay: { cielo: ["#cfd8dc", "#f1f5f2"], capas: ["#9ccc65", "#6aa84f", "#3e7c3a"], sol: "#ffffff", forma: "lomas" },
+  lunahuana: { cielo: ["#5fb4ff", "#e3f3ff"], capas: ["#c9a46b", "#7aa35a", "#3f6e8f"], sol: "#ffe58a", forma: "cerros" },
+  antioquia: { cielo: ["#7ec8ff", "#f0f8ff"], capas: ["#b08d6a", "#e86f8c", "#f2c14e"], sol: "#fff1a8", forma: "ciudad" },
+  caral: { cielo: ["#f6c27a", "#fff3dc"], capas: ["#d9b98a", "#c49a63", "#9c7448"], sol: "#fff7d6", forma: "lomas" },
+  huaros: { cielo: ["#6aa9e8", "#e6f1fb"], capas: ["#8f8a7a", "#6f6a5c", "#4a463d"], sol: "#fff1a8", forma: "rocas" },
+  "fiesta-agua-huaros": { cielo: ["#3f8fe0", "#cfe7ff"], capas: ["#7d9a5a", "#5d7d43", "#3c5a2c"], sol: "#ffd27a", forma: "cerros" },
+  "valle-lurin": { cielo: ["#9ad0ff", "#f3fbff"], capas: ["#d8c49c", "#9bbf6a", "#5c8a3e"], sol: "#fff3c4", forma: "lomas" },
   "lima-criolla": { cielo: ["#6a3fd1", "#f2b5d4"], capas: ["#e8a33d", "#8e3b9e", "#3d1f5c"], sol: "#fff3c4", forma: "ciudad" },
 };
 
@@ -59,7 +65,9 @@ function svgIcono(tam, margen) {
 const browser = await chromium.launch({ channel: "chrome" });
 const page = await browser.newPage();
 
+import { existsSync } from "node:fs";
 for (const [nombre, p] of Object.entries(paisajes)) {
+  if (existsSync(`public/img/${nombre}.jpg`) && !process.argv.includes("--todas")) continue;
   await page.setViewportSize({ width: 800, height: 600 });
   await page.setContent(`<body style="margin:0">${svgPaisaje(p)}</body>`);
   await page.screenshot({ path: `public/img/${nombre}.jpg`, type: "jpeg", quality: 82 });
