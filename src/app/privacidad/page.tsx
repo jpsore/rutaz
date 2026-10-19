@@ -39,6 +39,12 @@ export default function Privacidad() {
 
       <h2 className="mt-5 text-lg font-bold">Tus rutas</h2>
       <p className="mt-1">Tus rutas guardadas se quedan en tu celular. No las subimos a ningún lado.</p>
+
+      <p className="mt-8 text-sm text-texto-suave">
+        <Link href="/creditos" className="underline underline-offset-2">
+          Créditos de las fotos
+        </Link>
+      </p>
     </main>
   );
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BotonVolver } from "../BotonVolver";
+import { CreditoFoto } from "../CreditoFoto";
 import { CtaArmarRuta } from "../CtaArmarRuta";
 import { IconoAviso, IconoBus } from "../iconos";
 import { ShareButton } from "../ShareButton";
@@ -60,7 +61,8 @@ export function DetailLayout({ ficha: f, hoy, mesActual, origen }: { ficha: Fich
         </div>
       </div>
 
-      <div className="px-5 pt-5">
+      <CreditoFoto imagen={f.imagen} className="px-5 pt-2" />
+      <div className="px-5 pt-3">
         <h1 className="text-[28px] font-bold leading-tight tracking-[-0.6px]">{f.nombre}</h1>
         {d && (
           <p className="mt-1 text-texto-suave">
