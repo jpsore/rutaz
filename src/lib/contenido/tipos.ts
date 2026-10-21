@@ -94,6 +94,20 @@ export type ParadaFila = {
   verificado_el: string | null;
 };
 
+/** Lugar sugerido en una parada de comida u hospedaje (ver supabase/migrations/0004_lugares_sugeridos.sql). */
+export type LugarFila = {
+  id: number;
+  stop_id: number;
+  nivel: "economico" | "estandar" | "comodo" | null; // null = sirve para todos los niveles
+  orden: number;
+  nombre: string;
+  precio_min: number;
+  precio_max: number;
+  referencia: string | null;
+  maps_url: string | null;
+  verificado_el: string;
+};
+
 /** Todo el contenido publicado (es chico: se carga entero y se cachea una hora). */
 export type Contenido = {
   destinos: Destino[];
@@ -104,4 +118,6 @@ export type Contenido = {
   avisos: Aviso[];
   plantillas: PlantillaFila[];
   paradas: ParadaFila[];
+  /** Vacío si la tabla stop_places aún no existe. */
+  lugares: LugarFila[];
 };

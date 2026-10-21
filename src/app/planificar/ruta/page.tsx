@@ -9,6 +9,7 @@ import { hoyLima } from "@/lib/fechas";
 import { ahora } from "@/lib/reloj";
 import { DIAS, PRESUPUESTOS, planificar, type Dias, type Presupuesto } from "@/lib/planner";
 import { soles } from "@/lib/dinero";
+import { lugaresPorParada } from "@/lib/lugares";
 
 type Q = Record<string, string | string[] | undefined>;
 
@@ -58,6 +59,7 @@ export default async function Itinerario({ searchParams }: PageProps<"/planifica
   }
   const hoy = hoyLima(ahora());
   const { evento, ...plan } = p.plan;
+  const paradaIds = p.plantillas.flatMap((t) => t.paradas.map((x) => x.id));
   return (
     <ItineraryView
       key={`${plan.tipo}-${plan.slug}-${p.presupuesto}-${p.dias}`}
@@ -68,6 +70,7 @@ export default async function Itinerario({ searchParams }: PageProps<"/planifica
       quitadasIniciales={p.quitadas}
       avisos={avisosDelPlan(c, p.plan, hoy)}
       hoy={hoy}
+      lugares={lugaresPorParada(c.lugares, paradaIds)}
     />
   );
 }

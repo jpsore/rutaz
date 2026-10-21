@@ -99,3 +99,7 @@ Tests mínimos: elige cómodo cuando entra; baja a estándar y a económico; 500
 - Con S/ 500+ no se muestra cuánto sobra (no hay tope).
 - Sugerencia "Hazlo en n-1 días" lleva a la URL con un día menos (sin paradas quitadas).
 - Avisos (CA-4.5): para eventos, los que cruzan las fechas del evento; para el resto, los vigentes o que empiezan en los próximos 60 días.
+- v2 · Lugares sugeridos (tabla `stop_places`, migración 0004): en paradas de comida u hospedaje se muestran hasta 2 lugares del nivel que eligió el motor o de nivel null, ordenados por `orden` (a igual orden, primero el del nivel). Texto: "{nombre} · S/ min–max por persona" (o "S/ n por persona" si min = max) y debajo, en gris chico, "Precio aprox. · revisado {mes año}" con el `verificado_el` de cada lugar. Si cambia el nivel al quitar paradas, cambian los lugares. `referencia` y `maps_url` no se muestran (la lista no los pide).
+- v2 · Si la tabla `stop_places` no existe aún, falla la lectura o no hay lugares, el itinerario se ve igual que antes (los lugares se leen aparte y un error da lista vacía).
+- v2 · Los lugares solo se ven en el itinerario; la ruta guardada en Mis rutas no los guarda ni los muestra (no se cambió el formato de `localStorage`).
+- v2 · Cierre: al final del itinerario, bloque "¿Te gusta cómo quedó?" con el total por persona y los días, "Guardar ruta" (principal) y enlace "Armar otra ruta" a Este mes (`/`). El botón fijo de abajo (Guardar + Compartir) no cambia. Al guardar, el bloque pasa a "Ya está en tu celular" con "Ver en Mis rutas" y "Armar otra ruta".

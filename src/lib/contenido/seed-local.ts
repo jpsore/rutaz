@@ -148,4 +148,11 @@ export const contenidoLocal: Contenido = {
       [1, 7, "00:30", "Regreso", null, "transporte", 15, 20, 30, false, V],
     ]),
   ],
+  // Lugares sugeridos de ejemplo (v2). Parada 3 = almuerzo en San Pedro, 6 = noche en San Pedro.
+  lugares: [
+    { id: 1, stop_id: 3, nivel: "economico", orden: 1, nombre: "Menú del mercado", precio_min: 10, precio_max: 15, referencia: "Menú del día", maps_url: null, verificado_el: "2026-10-15" },
+    { id: 2, stop_id: 3, nivel: "estandar", orden: 1, nombre: "Restaurante Doña Rosa", precio_min: 20, precio_max: 25, referencia: "Frente a la plaza", maps_url: null, verificado_el: "2026-10-15" },
+    { id: 3, stop_id: 3, nivel: "estandar", orden: 2, nombre: "Truchas El Mirador", precio_min: 18, precio_max: 25, referencia: null, maps_url: null, verificado_el: "2026-10-15" },
+    { id: 4, stop_id: 6, nivel: null, orden: 1, nombre: "Hospedaje comunal Marcahuasi", precio_min: 30, precio_max: 60, referencia: null, maps_url: null, verificado_el: "2026-10-15" },
+  ],
 };

@@ -22,8 +22,8 @@ Cubre H6 (botón con destino prellenado) y H7 (presupuesto y días).
 **CA-3.3 Solo dos preguntas**
 - Veo solo dos campos:
   - **Presupuesto por persona**, con chips: S/ 150, S/ 300 y S/ 500+.
-  - **Días**, con chips: 1, 2 y 3.
-- Los chips de días que no tienen itinerario cargado para ese plan se ven deshabilitados con la nota "Aún no tenemos ruta de {n} días para este lugar".
+  - **¿Cuántos días?** (ayuda: "1 día = ida y vuelta el mismo día"), con chips: 1, 2 y 3.
+- Los chips de días que no tienen itinerario cargado para ese plan se ven deshabilitados con la nota "Este plan es de {n} día(s)" (v2).
 - Valores por defecto: ninguno seleccionado en presupuesto; en días, el menor disponible.
 
 **CA-3.4 Un solo botón**
@@ -48,3 +48,4 @@ Cubre H6 (botón con destino prellenado) y H7 (presupuesto y días).
 
 - Si el plan no existe o no tiene plantillas, `/planificar` muestra un mensaje amable con botón a "Este mes".
 - Debajo del botón deshabilitado se ve "Elige tu presupuesto para ver la ruta".
+- v2: la nota de días es una sola para el plan y lista los días que sí tiene: "Este plan es de 2 días", "Este plan es de 1 o 2 días" (como en el prototipo), en vez de una línea por chip desactivado.

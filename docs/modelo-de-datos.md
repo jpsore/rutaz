@@ -35,6 +35,7 @@ account_interest (correos de "Sí, avísame")        analytics_events
 |---|---|
 | `itinerary_templates` | Un itinerario prearmado para un plan y un número de días (1 a 3). Único por plan + días. |
 | `template_stops` | Las paradas: día, orden, hora, actividad, categoría, costo en los tres niveles, si es `opcional` y `verificado_el` (obligatorio en transporte). |
+| `stop_places` | (v2, migración 0004) 1 o 2 lugares sugeridos por parada de comida u hospedaje y nivel (`nivel` null = todos): nombre, rango `precio_min`–`precio_max` por persona, `orden` y `verificado_el`. Si la tabla no existe, la app funciona sin lugares. |
 
 Reglas:
 - Costos **por persona**, en soles enteros. Un `check` obliga a que económico ≤ estándar ≤ cómodo.

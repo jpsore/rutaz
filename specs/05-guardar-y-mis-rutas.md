@@ -52,3 +52,4 @@ Cubre H10 (guardar en el celular) y H11 (abrir la ruta durante el viaje).
 - Si la ruta ya estaba guardada (duplicado en menos de 1 min), el botón pasa a "Guardada ✓" sin repetir la confirmación ni el sheet.
 - En una ruta guardada con fechas, se abre el día de hoy si cae dentro del viaje; si no, el Día 1. Sin fechas, todos los días abiertos.
 - El sheet "Sí, avísame" aparece 0.6 s después de guardar, para que se lea la confirmación.
+- v2: la confirmación "Ruta guardada ✓" trae los enlaces "Ver en Mis rutas" (`/mis-rutas`) y "Armar otra ruta" (`/`) y dura 6 s (antes 3 s) para que se alcancen a tocar. Los mismos dos enlaces quedan fijos en el bloque de cierre del itinerario. No se agregaron eventos de medición.

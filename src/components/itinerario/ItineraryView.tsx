@@ -6,7 +6,7 @@ import { track } from "@/lib/analytics";
 import { almacenLocal } from "@/lib/almacen";
 import { rutaItinerario, textoCompartir } from "@/lib/compartir";
 import type { ResumenPlan } from "@/lib/contenido/consultas";
-import type { Aviso } from "@/lib/contenido/tipos";
+import type { Aviso, LugarFila } from "@/lib/contenido/tipos";
 import { tocaMostrarOferta } from "@/lib/cuenta";
 import { soles } from "@/lib/dinero";
 import { planificar, type Dias, type Plantilla, type Presupuesto } from "@/lib/planner";
@@ -16,7 +16,7 @@ import { IconoAtras } from "../iconos";
 import { ShareButton } from "../ShareButton";
 import { AlertBanner } from "../ui/AlertBanner";
 import { BottomSheet } from "../ui/BottomSheet";
-import { Button } from "../ui/Button";
+import { Button, ButtonLink } from "../ui/Button";
 import { CabeceraPlan } from "../planificador/CabeceraPlan";
 import { ListaDias } from "./ListaDias";
 import { ResumenCosto } from "./ResumenCosto";
@@ -29,9 +29,11 @@ type Props = {
   quitadasIniciales: string[];
   avisos: Aviso[];
   hoy: string;
+  /** Lugares sugeridos por id de parada (vacío si no hay). */
+  lugares: Record<string, LugarFila[]>;
 };
 
-export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIniciales, avisos, hoy }: Props) {
+export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIniciales, avisos, hoy, lugares }: Props) {
   const router = useRouter();
   const [quitadas, setQuitadas] = useState<string[]>(quitadasIniciales);
   const [guardadaClave, setGuardadaClave] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
       if (!nueva) return;
       track("route_saved", { tipo: plan.tipo, slug: plan.slug, dias, presupuesto });
       setConfirmacion(true);
-      window.setTimeout(() => setConfirmacion(false), 3000);
+      window.setTimeout(() => setConfirmacion(false), 6000);
       if (tocaMostrarOferta()) window.setTimeout(() => setOferta(true), 600);
     } catch (e) {
       if (e instanceof ErrorAlmacen) setSinAlmacen(true);
@@ -174,8 +176,38 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
       )}
 
       <div className="mt-6">
-        <ListaDias dias={r.dias} hoy={hoy} />
+        <ListaDias dias={r.dias} hoy={hoy} lugares={lugares} nivel={r.nivel} />
       </div>
+
+      {guardada ? (
+        <section aria-labelledby="cierre-guardada" className="mt-8 rounded-2xl bg-secundario-suave p-5">
+          <h2 id="cierre-guardada" className="text-xl font-bold">
+            Ya está en tu celular
+          </h2>
+          <p className="mt-1 text-texto-suave">La encuentras en Mis rutas, incluso sin señal.</p>
+          <ButtonLink href="/mis-rutas" grande className="mt-4 w-full">
+            Ver en Mis rutas
+          </ButtonLink>
+          <Link href="/" className="mt-2 flex min-h-12 items-center justify-center font-semibold text-acento-fuerte underline underline-offset-2">
+            Armar otra ruta
+          </Link>
+        </section>
+      ) : (
+        <section aria-labelledby="cierre" className="mt-8 rounded-2xl bg-acento-suave p-5">
+          <h2 id="cierre" className="text-xl font-bold">
+            ¿Te gusta cómo quedó?
+          </h2>
+          <p className="mt-1 text-texto-suave">
+            {soles(r.total)} por persona · {dias} {dias === 1 ? "día" : "días"}. Se guarda en tu celular.
+          </p>
+          <Button grande onClick={guardar} className="mt-4 w-full">
+            Guardar ruta
+          </Button>
+          <Link href="/" className="mt-2 flex min-h-12 items-center justify-center font-semibold text-acento-fuerte underline underline-offset-2">
+            Armar otra ruta
+          </Link>
+        </section>
+      )}
 
       {confirmacion && (
         <div
@@ -184,6 +216,14 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
         >
           <p className="font-semibold">Ruta guardada ✓</p>
           <p className="text-sm opacity-90">La encuentras en Mis rutas</p>
+          <div className="mt-1 flex justify-center gap-4">
+            <Link href="/mis-rutas" className="inline-flex min-h-12 items-center font-semibold underline underline-offset-2">
+              Ver en Mis rutas
+            </Link>
+            <Link href="/" className="inline-flex min-h-12 items-center font-semibold underline underline-offset-2">
+              Armar otra ruta
+            </Link>
+          </div>
         </div>
       )}
 

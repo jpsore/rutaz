@@ -3,11 +3,27 @@ import { cache } from "react";
 import { clienteServidor } from "../supabase/servidor";
 import { supabaseConfigurado } from "../supabase/config";
 import { contenidoLocal } from "./seed-local";
-import type { Contenido } from "./tipos";
+import type { Contenido, LugarFila } from "./tipos";
+
+/**
+ * Lugares sugeridos (v2). Son un extra: si la tabla aún no existe o falla la lectura,
+ * el itinerario se ve como antes, sin lugares.
+ */
+async function lugaresDesdeSupabase(db: ReturnType<typeof clienteServidor>): Promise<LugarFila[]> {
+  try {
+    const { data, error } = await db
+      .from("stop_places")
+      .select("id, stop_id, nivel, orden, nombre, precio_min, precio_max, referencia, maps_url, verificado_el")
+      .eq("publicado", true);
+    return error ? [] : ((data ?? []) as LugarFila[]);
+  } catch {
+    return [];
+  }
+}
 
 async function desdeSupabase(): Promise<Contenido> {
   const db = clienteServidor();
-  const [destinos, eventos, tematicas, feriados, picks, avisos, plantillas, paradas] = await Promise.all([
+  const [destinos, eventos, tematicas, feriados, picks, avisos, plantillas, paradas, lugares] = await Promise.all([
     db.from("destinations").select("*").eq("publicado", true),
     db.from("festivities").select("*").eq("publicado", true),
     db.from("themes").select("*").eq("publicado", true),
@@ -16,6 +32,7 @@ async function desdeSupabase(): Promise<Contenido> {
     db.from("alerts").select("*").eq("publicado", true),
     db.from("itinerary_templates").select("*").eq("publicado", true),
     db.from("template_stops").select("*"),
+    lugaresDesdeSupabase(db),
   ]);
   const error = [destinos, eventos, tematicas, feriados, picks, avisos, plantillas, paradas].find((r) => r.error)?.error;
   if (error) throw new Error(`No se pudo leer el contenido: ${error.message}`);
@@ -28,6 +45,7 @@ async function desdeSupabase(): Promise<Contenido> {
     avisos: avisos.data ?? [],
     plantillas: plantillas.data ?? [],
     paradas: paradas.data ?? [],
+    lugares,
   };
 }
 
