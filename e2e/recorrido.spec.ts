@@ -101,7 +101,14 @@ test.describe("Planificador e itinerario", () => {
 
     // Cierre del itinerario
     const cierre = page.getByRole("region", { name: "¿Te gusta cómo quedó?" });
+    await cierre.scrollIntoViewIfNeeded();
     await expect(cierre.getByRole("button", { name: "Guardar ruta" })).toBeVisible();
+    await expect(cierre.getByRole("button", { name: "Compartir" })).toBeVisible();
+    // Con el cierre en pantalla, la barra fija se oculta: un solo "Guardar ruta"
+    await expect(page.getByRole("button", { name: "Guardar ruta" })).toHaveCount(1);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(page.getByRole("button", { name: "Guardar ruta" })).toHaveCount(2);
+    await cierre.scrollIntoViewIfNeeded();
     await cierre.getByRole("link", { name: "Armar otra ruta" }).click();
     await expect(page).toHaveURL(/\/$/);
   });
@@ -138,14 +145,17 @@ test.describe("Guardar, Mis rutas y compartir", () => {
     await expect(confirmacion).toBeVisible();
     await expect(confirmacion.getByRole("link", { name: "Ver en Mis rutas" })).toBeVisible();
     await expect(confirmacion.getByRole("link", { name: "Armar otra ruta" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Guardada ✓" })).toBeDisabled();
 
     const sheet = page.getByRole("dialog", { name: "¿Creamos tu cuenta para no perder tus rutas?" });
     await expect(sheet).toBeVisible();
     await sheet.getByRole("button", { name: "Ahora no" }).click();
     await expect(sheet).toBeHidden();
 
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(page.getByRole("button", { name: "Guardada ✓" })).toBeDisabled();
+
     const cierre = page.getByRole("region", { name: "Ya está en tu celular" });
+    await cierre.scrollIntoViewIfNeeded();
     await expect(cierre.getByRole("link", { name: "Armar otra ruta" })).toBeVisible();
     await cierre.getByRole("link", { name: "Ver en Mis rutas" }).click();
     await expect(page.getByRole("heading", { name: "Mis rutas" })).toBeVisible();
