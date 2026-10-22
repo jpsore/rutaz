@@ -9,13 +9,17 @@ type Props = {
   className?: string;
 };
 
-/** Chip seleccionable de un toque (mínimo 48px de alto). */
+/**
+ * Chip seleccionable de un toque (mínimo 48px de alto).
+ * Deshabilitado se ve y se anuncia como tal (aria-disabled), pero el toque igual llega a onClick para poder medirlo:
+ * quien lo usa decide no seleccionarlo.
+ */
 export function Chip({ seleccionado, deshabilitado, onClick, children, className = "" }: Props) {
   return (
     <button
       type="button"
       aria-pressed={seleccionado}
-      disabled={deshabilitado}
+      aria-disabled={deshabilitado || undefined}
       onClick={onClick}
       className={[
         "min-h-12 rounded-full border px-5 text-base font-semibold transition-colors",

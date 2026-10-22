@@ -33,7 +33,7 @@ track(nombre: NombreEvento, props?: Record<string, unknown>): void
 | `detail_view` | Se ve una ficha | `{ tipo, slug, origen }` |
 | `planner_view` | Se ve el planificador | `{ tipo, slug }` |
 | `planner_submit` | Toca "Ver mi ruta" | `{ tipo, slug, presupuesto, dias }` |
-| **`itinerary_view`** | Se ve un itinerario | `{ tipo, slug, presupuesto, dias, nivel, total, alcanza }` |
+| **`itinerary_view`** | Se ve un itinerario | `{ tipo, slug, presupuesto, dias, nivel, total, alcanza, lugares }` (`lugares`: cuántos lugares sugeridos se ven, v2) |
 | `suggestion_click` | Usa una sugerencia | `{ tipo: "menos_dias" \| "quitar_parada" }` |
 | **`route_saved`** | Guarda una ruta | `{ tipo, slug, dias, presupuesto }` |
 | `saved_route_open` | Abre una ruta guardada | `{ id_ruta }` |
@@ -43,8 +43,16 @@ track(nombre: NombreEvento, props?: Record<string, unknown>): void
 | `account_offer_shown` | Aparece el sheet "Sí, avísame" | `{}` |
 | `account_offer_dismissed` | "Ahora no" | `{}` |
 | **`account_interest_submitted`** | Dejó su correo (insert en `account_interest` ok) | `{}` (nunca el correo) |
+| `planner_day_unavailable_click` | (v2) Toca un chip de días desactivado (no se selecciona) | `{ tipo, slug, dias }` |
+| `itinerary_end_view` | (v2) El bloque "¿Te gusta cómo quedó?" entra en pantalla (una vez por itinerario) | `{ tipo, slug, nivel, total, alcanza, lugares }` |
+| `another_route_click` | (v2) Toca "Armar otra ruta" | `{ origen: "cierre" \| "confirmacion" }` |
+| `my_routes_click` | (v2) Toca "Ver en Mis rutas" | `{ origen: "cierre" \| "confirmacion" }` |
 
 En negrita, los que alimentan los indicadores.
+
+Desde la v2, `track()` agrega `v: "2"` a las props de **todos** los eventos (`props->>'v' = '2'`); los eventos de v1 no la tienen. Los 4 eventos nuevos se habilitaron en la base con `supabase/migrations/0005_eventos_v2.sql`.
+
+Prueba con usuarios de la v2: manda el link con `?utm_source=prueba&utm_campaign=v2&utm_content=<nombre>` y revisa `prueba_testers` (columnas `campana`, `llego_al_cierre`, `armo_otra`, `toco_dia_desactivado`, `max_lugares_vistos`). Para tus propias pruebas usa `?utm_source=dev`.
 
 ## Indicadores y metas
 

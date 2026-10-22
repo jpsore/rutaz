@@ -73,7 +73,13 @@ test.describe("Planificador e itinerario", () => {
 
     const ver = page.getByRole("button", { name: "Ver mi ruta" });
     await expect(ver).toBeDisabled();
+    await expect(page.getByRole("group", { name: "¿Cuántos días?" })).toBeVisible();
+    await expect(page.getByText("1 día = ida y vuelta el mismo día")).toBeVisible();
     await expect(page.getByRole("button", { name: "1", exact: true })).toBeDisabled();
+    await expect(page.getByText("Este plan es de 2 días")).toBeVisible();
+    // Tocar un día desactivado no lo selecciona
+    await page.getByRole("button", { name: "1", exact: true }).click({ force: true });
+    await expect(page.getByRole("button", { name: "1", exact: true })).toHaveAttribute("aria-pressed", "false");
     await page.getByRole("button", { name: "S/ 300" }).click();
     await page.getByRole("button", { name: "2", exact: true }).click();
     await ver.click();
@@ -84,6 +90,29 @@ test.describe("Planificador e itinerario", () => {
     await expect(page.getByRole("heading", { name: "Día 1" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Día 2" })).toBeVisible();
     await expect(page.getByText(/margen de imprevistos de 10 % \(S\/ 26\)/)).toBeVisible();
+
+    // Lugares sugeridos del nivel estándar (y los de "todos los niveles"), con precio por persona
+    const almuerzo = page.getByRole("list", { name: "Lugares sugeridos: Almuerzo en el pueblo" });
+    await expect(almuerzo.getByRole("listitem")).toHaveCount(2);
+    await expect(almuerzo.getByRole("listitem").first()).toContainText("Restaurante Doña Rosa · S/ 20–25 por persona");
+    await expect(almuerzo.getByText("Precio aprox. · revisado oct 2026").first()).toBeVisible();
+    await expect(page.getByText("Menú del mercado")).toHaveCount(0);
+    await expect(page.getByText("Hospedaje comunal Marcahuasi · S/ 30–60 por persona")).toBeVisible();
+
+    // Cierre del itinerario
+    const cierre = page.getByRole("region", { name: "¿Te gusta cómo quedó?" });
+    await expect(cierre.getByRole("button", { name: "Guardar ruta" })).toBeVisible();
+    await cierre.getByRole("link", { name: "Armar otra ruta" }).click();
+    await expect(page).toHaveURL(/\/$/);
+  });
+
+  test("con S/ 150 se muestran los lugares económicos; sin lugares la parada se ve igual", async ({ page }) => {
+    await page.goto("/planificar/ruta?tipo=destino&slug=san-pedro-de-casta&presupuesto=150&dias=2");
+    await expect(page.getByText("Menú del mercado · S/ 10–15 por persona")).toBeVisible();
+    await expect(page.getByText("Restaurante Doña Rosa")).toHaveCount(0);
+    await page.goto("/planificar/ruta?tipo=destino&slug=barranco&presupuesto=300&dias=1");
+    await expect(page.getByText("Cena criolla")).toBeVisible();
+    await expect(page.getByText(/Precio aprox\./)).toHaveCount(0);
   });
 
   test("con S/ 150 no alcanza y quitar una parada recalcula", async ({ page }) => {
@@ -104,8 +133,11 @@ test.describe("Planificador e itinerario", () => {
 test.describe("Guardar, Mis rutas y compartir", () => {
   test("guardar, cerrar el sheet, abrir en Mis rutas y borrar", async ({ page }) => {
     await page.goto("/planificar/ruta?tipo=destino&slug=barranco&presupuesto=300&dias=1");
-    await page.getByRole("button", { name: "Guardar ruta" }).click();
-    await expect(page.getByText("Ruta guardada ✓")).toBeVisible();
+    await page.getByRole("button", { name: "Guardar ruta" }).first().click();
+    const confirmacion = page.getByRole("status").filter({ hasText: "Ruta guardada ✓" });
+    await expect(confirmacion).toBeVisible();
+    await expect(confirmacion.getByRole("link", { name: "Ver en Mis rutas" })).toBeVisible();
+    await expect(confirmacion.getByRole("link", { name: "Armar otra ruta" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Guardada ✓" })).toBeDisabled();
 
     const sheet = page.getByRole("dialog", { name: "¿Creamos tu cuenta para no perder tus rutas?" });
@@ -113,7 +145,9 @@ test.describe("Guardar, Mis rutas y compartir", () => {
     await sheet.getByRole("button", { name: "Ahora no" }).click();
     await expect(sheet).toBeHidden();
 
-    await page.getByRole("link", { name: "Mis rutas" }).click();
+    const cierre = page.getByRole("region", { name: "Ya está en tu celular" });
+    await expect(cierre.getByRole("link", { name: "Armar otra ruta" })).toBeVisible();
+    await cierre.getByRole("link", { name: "Ver en Mis rutas" }).click();
     await expect(page.getByRole("heading", { name: "Mis rutas" })).toBeVisible();
     await page.getByRole("link", { name: /Barranco/ }).click();
     await expect(page.getByRole("button", { name: /Día 1/ })).toHaveAttribute("aria-expanded", "true");
@@ -126,7 +160,7 @@ test.describe("Guardar, Mis rutas y compartir", () => {
 
   test("dejar el correo en Sí, avísame", async ({ page }) => {
     await page.goto("/planificar/ruta?tipo=destino&slug=lomas-de-lachay&presupuesto=150&dias=1");
-    await page.getByRole("button", { name: "Guardar ruta" }).click();
+    await page.getByRole("button", { name: "Guardar ruta" }).first().click();
     const sheet = page.getByRole("dialog");
     await sheet.getByRole("button", { name: "Sí, avísame" }).click();
     const enviar = sheet.getByRole("button", { name: "Enviar" });

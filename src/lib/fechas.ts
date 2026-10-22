@@ -93,6 +93,12 @@ export function formatoFechaCorta(fecha: string): string {
   return `${d.getUTCDate()} ${MESES_CORTOS[d.getUTCMonth()]}`;
 }
 
+/** "oct 2026" */
+export function formatoMesAnio(fecha: string): string {
+  const d = aUTC(fecha);
+  return `${MESES_CORTOS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
 /** "3 – 6 oct", "29 oct – 2 nov" o "31 oct" si es un solo día. */
 export function formatoRango(inicio: string, fin: string): string {
   if (inicio === fin) return formatoFechaCorta(inicio);

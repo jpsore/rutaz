@@ -10,6 +10,11 @@ import { Chip } from "../ui/Chip";
 
 type Props = { tipo: TipoPlan; slug: string; diasDisponibles: number[] };
 
+/** "Este plan es de 2 días", "Este plan es de 1 o 2 días". */
+export function notaDiasDelPlan(dias: number[]): string {
+  return `Este plan es de ${dias.join(" o ")} ${dias.length === 1 && dias[0] === 1 ? "día" : "días"}`;
+}
+
 export function etiquetaPresupuesto(p: number): string {
   return p === 500 ? "S/ 500+" : `S/ ${p}`;
 }
@@ -42,28 +47,30 @@ export function PlannerForm({ tipo, slug, diasDisponibles }: Props) {
       </fieldset>
 
       <fieldset className="mt-7">
-        <legend className="text-lg font-bold">Días</legend>
+        <legend className="text-lg font-bold">¿Cuántos días?</legend>
+        <p className="mt-0.5 text-sm text-texto-suave">
+          1 día = ida y vuelta el mismo día
+        </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {DIAS.map((d) => (
             <Chip
               key={d}
               seleccionado={dias === d}
               deshabilitado={!diasDisponibles.includes(d)}
-              onClick={() => setDias(d)}
+              onClick={() => {
+                if (diasDisponibles.includes(d)) setDias(d);
+                else track("planner_day_unavailable_click", { tipo, slug, dias: d });
+              }}
               className="min-w-16"
             >
               {d}
             </Chip>
           ))}
         </div>
-        {sinRuta.length > 0 && (
-          <ul className="mt-3 space-y-1 text-sm text-texto-suave">
-            {sinRuta.map((d) => (
-              <li key={d}>
-                Aún no tenemos ruta de {d} {d === 1 ? "día" : "días"} para este lugar
-              </li>
-            ))}
-          </ul>
+        {sinRuta.length > 0 && diasDisponibles.length > 0 && (
+          <p className="mt-3 rounded-xl bg-gris px-3 py-2 text-sm font-semibold">
+            {notaDiasDelPlan(diasDisponibles)}
+          </p>
         )}
       </fieldset>
 
