@@ -88,6 +88,18 @@ export const CREDITOS_FOTOS: Record<string, Credito> = {
     "licencia": "CC BY-SA 4.0",
     "licenciaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "fuente": "https://commons.wikimedia.org/wiki/File:Templo_del_sol,_Pachacamac.jpg"
+  },
+  "/img/churin.jpg": {
+    "autor": "Photoshootsperu",
+    "licencia": "CC BY-SA 4.0",
+    "licenciaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Chur%C3%ADn.jpg"
+  },
+  "/img/naplo.jpg": {
+    "autor": "Zoe PM",
+    "licencia": "CC BY-SA 4.0",
+    "licenciaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Playa_El_SIlencio_vista_panor%C3%A1mica.jpg"
   }
 };
 
