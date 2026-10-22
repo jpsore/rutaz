@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { LugarFila } from "./contenido/tipos";
 import { contenidoLocal as c } from "./contenido/seed-local";
-import { lugaresParaParada, lugaresPorParada, textoPrecioLugar } from "./lugares";
+import { plantillasDelPlan } from "./contenido/consultas";
+import { contarLugares, lugaresParaParada, lugaresPorParada, textoPrecioLugar } from "./lugares";
+import { planificar } from "./planner";
 
 function lugar(p: Partial<LugarFila> & Pick<LugarFila, "id">): LugarFila {
   return {
@@ -68,5 +70,22 @@ describe("lugaresPorParada", () => {
 
   it("tabla vacía (migración aún no aplicada)", () => {
     expect(lugaresPorParada([], ["3"])).toEqual({});
+  });
+});
+
+describe("contarLugares", () => {
+  const plantillas = plantillasDelPlan(c, "destino", "san-pedro-de-casta");
+  const ids = plantillas.flatMap((t) => t.paradas.map((p) => p.id));
+
+  it("cuenta los lugares que se ven con el nivel del motor", () => {
+    const estandar = planificar({ plantillas, dias: 2, presupuesto: 300 });
+    expect(contarLugares(estandar.dias, lugaresPorParada(c.lugares, ids), estandar.nivel)).toBe(3);
+    const economico = planificar({ plantillas, dias: 2, presupuesto: 150 });
+    expect(contarLugares(economico.dias, lugaresPorParada(c.lugares, ids), economico.nivel)).toBe(2);
+  });
+
+  it("sin lugares es 0", () => {
+    const r = planificar({ plantillas, dias: 2, presupuesto: 300 });
+    expect(contarLugares(r.dias, {}, r.nivel)).toBe(0);
   });
 });

@@ -9,6 +9,7 @@ import type { ResumenPlan } from "@/lib/contenido/consultas";
 import type { Aviso, LugarFila } from "@/lib/contenido/tipos";
 import { tocaMostrarOferta } from "@/lib/cuenta";
 import { soles } from "@/lib/dinero";
+import { contarLugares } from "@/lib/lugares";
 import { planificar, type Dias, type Plantilla, type Presupuesto } from "@/lib/planner";
 import { ErrorAlmacen, LocalStore, claveCombinacion } from "@/lib/rutas-guardadas";
 import { AccountOfferSheet } from "../AccountOfferSheet";
@@ -47,12 +48,32 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
     .find((p) => p.dias === dias)
     ?.paradas.filter((p) => quitadas.includes(p.id));
 
+  const nLugares = useMemo(() => contarLugares(r.dias, lugares, r.nivel), [r.dias, lugares, r.nivel]);
+
   const enviado = useRef(false);
   useEffect(() => {
     if (enviado.current) return;
     enviado.current = true;
-    track("itinerary_view", { tipo: plan.tipo, slug: plan.slug, presupuesto, dias, nivel: r.nivel, total: r.total, alcanza: r.alcanza });
-  }, [plan.tipo, plan.slug, presupuesto, dias, r.nivel, r.total, r.alcanza]);
+    track("itinerary_view", { tipo: plan.tipo, slug: plan.slug, presupuesto, dias, nivel: r.nivel, total: r.total, alcanza: r.alcanza, lugares: nLugares });
+  }, [plan.tipo, plan.slug, presupuesto, dias, r.nivel, r.total, r.alcanza, nLugares]);
+
+  // itinerary_end_view: una vez por itinerario, cuando el bloque de cierre entra en pantalla.
+  const cierreRef = useRef<HTMLDivElement>(null);
+  const datosCierre = useRef({ tipo: plan.tipo, slug: plan.slug, nivel: r.nivel, total: r.total, alcanza: r.alcanza, lugares: nLugares });
+  useEffect(() => {
+    datosCierre.current = { tipo: plan.tipo, slug: plan.slug, nivel: r.nivel, total: r.total, alcanza: r.alcanza, lugares: nLugares };
+  });
+  useEffect(() => {
+    const el = cierreRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver((entradas) => {
+      if (!entradas.some((e) => e.isIntersecting)) return;
+      track("itinerary_end_view", datosCierre.current);
+      obs.disconnect();
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   // La URL siempre reproduce lo que se ve (incluidas las paradas quitadas).
   useEffect(() => {
@@ -179,16 +200,21 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
         <ListaDias dias={r.dias} hoy={hoy} lugares={lugares} nivel={r.nivel} />
       </div>
 
+      <div ref={cierreRef}>
       {guardada ? (
         <section aria-labelledby="cierre-guardada" className="mt-8 rounded-2xl bg-secundario-suave p-5">
           <h2 id="cierre-guardada" className="text-xl font-bold">
             Ya está en tu celular
           </h2>
           <p className="mt-1 text-texto-suave">La encuentras en Mis rutas, incluso sin señal.</p>
-          <ButtonLink href="/mis-rutas" grande className="mt-4 w-full">
+          <ButtonLink href="/mis-rutas" onClick={() => track("my_routes_click", { origen: "cierre" })} grande className="mt-4 w-full">
             Ver en Mis rutas
           </ButtonLink>
-          <Link href="/" className="mt-2 flex min-h-12 items-center justify-center font-semibold text-acento-fuerte underline underline-offset-2">
+          <Link
+            href="/"
+            onClick={() => track("another_route_click", { origen: "cierre" })}
+            className="mt-2 flex min-h-12 items-center justify-center font-semibold text-acento-fuerte underline underline-offset-2"
+          >
             Armar otra ruta
           </Link>
         </section>
@@ -203,11 +229,16 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
           <Button grande onClick={guardar} className="mt-4 w-full">
             Guardar ruta
           </Button>
-          <Link href="/" className="mt-2 flex min-h-12 items-center justify-center font-semibold text-acento-fuerte underline underline-offset-2">
+          <Link
+            href="/"
+            onClick={() => track("another_route_click", { origen: "cierre" })}
+            className="mt-2 flex min-h-12 items-center justify-center font-semibold text-acento-fuerte underline underline-offset-2"
+          >
             Armar otra ruta
           </Link>
         </section>
       )}
+      </div>
 
       {confirmacion && (
         <div
@@ -217,10 +248,18 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
           <p className="font-semibold">Ruta guardada ✓</p>
           <p className="text-sm opacity-90">La encuentras en Mis rutas</p>
           <div className="mt-1 flex justify-center gap-4">
-            <Link href="/mis-rutas" className="inline-flex min-h-12 items-center font-semibold underline underline-offset-2">
+            <Link
+              href="/mis-rutas"
+              onClick={() => track("my_routes_click", { origen: "confirmacion" })}
+              className="inline-flex min-h-12 items-center font-semibold underline underline-offset-2"
+            >
               Ver en Mis rutas
             </Link>
-            <Link href="/" className="inline-flex min-h-12 items-center font-semibold underline underline-offset-2">
+            <Link
+              href="/"
+              onClick={() => track("another_route_click", { origen: "confirmacion" })}
+              className="inline-flex min-h-12 items-center font-semibold underline underline-offset-2"
+            >
               Armar otra ruta
             </Link>
           </div>

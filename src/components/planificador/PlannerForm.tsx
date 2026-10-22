@@ -57,7 +57,10 @@ export function PlannerForm({ tipo, slug, diasDisponibles }: Props) {
               key={d}
               seleccionado={dias === d}
               deshabilitado={!diasDisponibles.includes(d)}
-              onClick={() => setDias(d)}
+              onClick={() => {
+                if (diasDisponibles.includes(d)) setDias(d);
+                else track("planner_day_unavailable_click", { tipo, slug, dias: d });
+              }}
               className="min-w-16"
             >
               {d}

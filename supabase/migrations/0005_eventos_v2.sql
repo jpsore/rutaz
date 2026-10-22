@@ -1,0 +1,4 @@
+-- Rutaz app · v2: eventos nuevos (solo agrega nombres; v1 sigue funcionando). Aplicada en Supabase el 22 oct 2026.
+alter table public.analytics_events drop constraint analytics_events_nombre_check;
+alter table public.analytics_events add constraint analytics_events_nombre_check check (nombre in ('app_open','month_view','month_next_click','card_open','card_cta_click','detail_view','planner_view','planner_submit','itinerary_view','suggestion_click','route_saved','saved_route_open','saved_route_delete','share_click','share_completed','account_offer_shown','account_offer_dismissed','account_interest_submitted','planner_day_unavailable_click','itinerary_end_view','another_route_click','my_routes_click'));
+-- Las vistas prueba_eventos y prueba_testers ahora incluyen la columna campana (y prueba_testers: llego_al_cierre, armo_otra, toco_dia_desactivado, max_lugares_vistos). Ver la versión completa en el proyecto.

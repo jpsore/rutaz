@@ -49,3 +49,4 @@ Cubre H6 (botón con destino prellenado) y H7 (presupuesto y días).
 - Si el plan no existe o no tiene plantillas, `/planificar` muestra un mensaje amable con botón a "Este mes".
 - Debajo del botón deshabilitado se ve "Elige tu presupuesto para ver la ruta".
 - v2: la nota de días es una sola para el plan y lista los días que sí tiene: "Este plan es de 2 días", "Este plan es de 1 o 2 días" (como en el prototipo), en vez de una línea por chip desactivado.
+- v2: el chip desactivado usa `aria-disabled` (no `disabled`) para que el toque se pueda medir con `planner_day_unavailable_click`; no se selecciona.

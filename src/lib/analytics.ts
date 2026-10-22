@@ -23,7 +23,19 @@ export const EVENTOS = [
   "account_offer_shown",
   "account_offer_dismissed",
   "account_interest_submitted",
+  // v2 (migración 0005)
+  "planner_day_unavailable_click",
+  "itinerary_end_view",
+  "another_route_click",
+  "my_routes_click",
 ] as const;
+
+/** Versión de la app que va en las props de cada evento, para separar v1 y v2 en las consultas. */
+export const VERSION_APP = "2";
+
+export function conVersion(props: Record<string, unknown>): Record<string, unknown> {
+  return { ...props, v: VERSION_APP };
+}
 
 export type NombreEvento = (typeof EVENTOS)[number];
 
@@ -93,12 +105,12 @@ function enviar(nombre: NombreEvento, props: Record<string, unknown>, sessionId:
     session_id: sessionId,
     user_id: null,
     ruta: window.location.pathname,
-    props,
+    props: conVersion(props),
     ...utm(),
     es_webview: esWebview(navigator.userAgent),
   };
   if (process.env.NODE_ENV !== "production") {
-    console.debug("[track]", nombre, props);
+    console.debug("[track]", nombre, fila.props);
     return;
   }
   const db = clienteNavegador();

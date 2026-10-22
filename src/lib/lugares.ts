@@ -2,7 +2,7 @@
 import type { LugarFila } from "./contenido/tipos";
 import { soles } from "./dinero";
 import { formatoMesAnio } from "./fechas";
-import type { Categoria, Nivel } from "./planner/tipos";
+import type { Categoria, DiaItinerario, Nivel } from "./planner/tipos";
 
 export const MAX_LUGARES_POR_PARADA = 2;
 const CATEGORIAS_CON_LUGARES: Categoria[] = ["comida", "hospedaje"];
@@ -59,4 +59,12 @@ export function lugaresParaParada(
       precio: textoPrecioLugar(l.precio_min, l.precio_max),
       revisado: `Precio aprox. · revisado ${formatoMesAnio(l.verificado_el)}`,
     }));
+}
+
+/** Cuántos lugares se ven en todo el itinerario (para la medición). */
+export function contarLugares(dias: DiaItinerario[], lugares: Record<string, LugarFila[]>, nivel: Nivel): number {
+  return dias.reduce(
+    (n, d) => n + d.paradas.reduce((m, p) => m + lugaresParaParada(lugares[p.id], p.categoria, nivel).length, 0),
+    0,
+  );
 }

@@ -77,6 +77,9 @@ test.describe("Planificador e itinerario", () => {
     await expect(page.getByText("1 día = ida y vuelta el mismo día")).toBeVisible();
     await expect(page.getByRole("button", { name: "1", exact: true })).toBeDisabled();
     await expect(page.getByText("Este plan es de 2 días")).toBeVisible();
+    // Tocar un día desactivado no lo selecciona
+    await page.getByRole("button", { name: "1", exact: true }).click({ force: true });
+    await expect(page.getByRole("button", { name: "1", exact: true })).toHaveAttribute("aria-pressed", "false");
     await page.getByRole("button", { name: "S/ 300" }).click();
     await page.getByRole("button", { name: "2", exact: true }).click();
     await ver.click();
