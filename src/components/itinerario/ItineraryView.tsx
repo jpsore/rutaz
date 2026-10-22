@@ -57,8 +57,11 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
     track("itinerary_view", { tipo: plan.tipo, slug: plan.slug, presupuesto, dias, nivel: r.nivel, total: r.total, alcanza: r.alcanza, lugares: nLugares });
   }, [plan.tipo, plan.slug, presupuesto, dias, r.nivel, r.total, r.alcanza, nLugares]);
 
-  // itinerary_end_view: una vez por itinerario, cuando el bloque de cierre entra en pantalla.
+  // Bloque de cierre en pantalla: se oculta la barra fija (para no repetir "Guardar ruta")
+  // y se manda itinerary_end_view una sola vez por itinerario.
   const cierreRef = useRef<HTMLDivElement>(null);
+  const [cierreVisible, setCierreVisible] = useState(false);
+  const finVisto = useRef(false);
   const datosCierre = useRef({ tipo: plan.tipo, slug: plan.slug, nivel: r.nivel, total: r.total, alcanza: r.alcanza, lugares: nLugares });
   useEffect(() => {
     datosCierre.current = { tipo: plan.tipo, slug: plan.slug, nivel: r.nivel, total: r.total, alcanza: r.alcanza, lugares: nLugares };
@@ -67,9 +70,11 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
     const el = cierreRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
     const obs = new IntersectionObserver((entradas) => {
-      if (!entradas.some((e) => e.isIntersecting)) return;
+      const visible = entradas.some((e) => e.isIntersecting);
+      setCierreVisible(visible);
+      if (!visible || finVisto.current) return;
+      finVisto.current = true;
       track("itinerary_end_view", datosCierre.current);
-      obs.disconnect();
     });
     obs.observe(el);
     return () => obs.disconnect();
@@ -210,6 +215,7 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
           <ButtonLink href="/mis-rutas" onClick={() => track("my_routes_click", { origen: "cierre" })} grande className="mt-4 w-full">
             Ver en Mis rutas
           </ButtonLink>
+          <ShareButton origen="itinerario" {...share} className="mt-2 w-full" />
           <Link
             href="/"
             onClick={() => track("another_route_click", { origen: "cierre" })}
@@ -229,6 +235,7 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
           <Button grande onClick={guardar} className="mt-4 w-full">
             Guardar ruta
           </Button>
+          <ShareButton origen="itinerario" {...share} className="mt-2 w-full" />
           <Link
             href="/"
             onClick={() => track("another_route_click", { origen: "cierre" })}
@@ -266,7 +273,13 @@ export function ItineraryView({ plan, plantillas, presupuesto, dias, quitadasIni
         </div>
       )}
 
-      <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-20">
+      <div
+        inert={cierreVisible}
+        aria-hidden={cierreVisible || undefined}
+        className={`fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-20 transition-all duration-200 motion-reduce:transition-none ${
+          cierreVisible ? "pointer-events-none translate-y-4 opacity-0" : "opacity-100"
+        }`}
+      >
         <div className="mx-auto flex max-w-[480px] gap-2 border-t border-borde bg-fondo/95 px-5 py-3 backdrop-blur">
           <Button grande onClick={guardar} disabled={guardada} variante={guardada ? "secundario" : "principal"} className="flex-1">
             {guardada ? "Guardada ✓" : "Guardar ruta"}
